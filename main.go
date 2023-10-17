@@ -15,6 +15,13 @@ func main() {
 
 	//rutas
 	r.GET("/", controllers.RootHandler)
+	r.GET("/get", controllers.GetHandler)
+	r.POST("/post", controllers.PostHandler)
+	r.PUT("/put", controllers.PutHandler)
+	r.PATCH("/patch", controllers.PatchHandler)
+	r.DELETE("/delete", controllers.DeleteHandler)
+
+	//rutas de testing
 	r.GET("/pija", controllers.PijaJaHandler)
 	r.GET("/gay/:id", controllers.RicardoEsGay)
 	r.POST("/login", controllers.LoginHandler)
