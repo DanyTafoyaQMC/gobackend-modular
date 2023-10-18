@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
-	"net/http"
 )
 
 // Función para leer una línea de texto desde una conexión y devolverla como string
@@ -58,7 +57,7 @@ func HttpError(conn net.Conn, statusCode int, errorMessage string) {
 func JsonResponse(conn net.Conn, statusCode int, data interface{}) {
 	responseData, err := json.Marshal(data)
 	if err != nil {
-		HttpError(conn, http.StatusInternalServerError, err.Error())
+		HttpError(conn, 500, err.Error())
 		return
 	}
 
