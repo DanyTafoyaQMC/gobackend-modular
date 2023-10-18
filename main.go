@@ -21,11 +21,6 @@ func main() {
 	r.PATCH("/patch", controllers.PatchHandler)
 	r.DELETE("/delete", controllers.DeleteHandler)
 
-	//rutas de testing
-	r.GET("/pija", controllers.PijaJaHandler)
-	r.GET("/gay/:id", controllers.RicardoEsGay)
-	r.POST("/login", controllers.LoginHandler)
-
 	// Inicializar el servidor
 	listener, err := net.Listen("tcp", ":3001")
 	if err != nil {
