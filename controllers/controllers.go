@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"net"
-	"strings"
 
 	router ".git/ErnestoDanielTafoyaMolina/router"
 	util ".git/ErnestoDanielTafoyaMolina/utils"
@@ -81,8 +80,8 @@ func LoginHandler(request *router.Request, conn net.Conn) {
 
 func RicardoEsGay(request *router.Request, conn net.Conn) {
 	fmt.Println(request.Host, request.Route, request.Method)
-	body := strings.Join(request.Body, "\n")
-	fmt.Println(body)
+	//body := strings.Join(request.Body, "\n")
+	//fmt.Println(body)
 	data := map[string]string{"ok": "true", "msg": "Ricardo se come la come"}
 	util.JsonResponse(conn, 200, data)
 	conn.Close()
@@ -115,6 +114,7 @@ func PostHandler(request *router.Request, conn net.Conn) {
 		"host":    request.Host,
 		"route":   request.Route,
 		"params":  request.Params,
+		"body":    request.Body,
 	}
 	util.JsonResponse(conn, 200, data)
 	conn.Close()
