@@ -64,61 +64,62 @@ func (r *Router) DELETE(route string, handler RouteHandler) {
 }
 
 // Función ServeHTTP para manejar las solicitudes HTTP
+// Función ServeHTTP para manejar las solicitudes HTTP
 func (r *Router) ServeHTTP(conn net.Conn) {
 	scanner := bufio.NewScanner(conn)
-	var header []string
-	var requestBodyLines []string
-	var f = true
 
 	for scanner.Scan() {
-		ln := scanner.Text()
-		if ln == "" {
-			f = false
-		}
-		if f == true {
-			header = append(header, ln)
-		}
-		if f == false {
-			requestBodyLines = append(requestBodyLines, ln)
+		var header []string
+		var requestBodyLines []string
+		var f = true
 
-			// Imprime cada línea del cuerpo para depuración
-			fmt.Println("Línea del cuerpo:", ln)
-		}
-		if f == false && ln == "" {
-			break
-		}
-	}
+		for {
+			ln := scanner.Text()
+			if ln == "" {
+				f = false
+			}
+			if f == true {
+				header = append(header, ln)
+			}
+			if f == false {
+				requestBodyLines = append(requestBodyLines, ln)
 
-	req := &Request{
-		Params:  make(map[string]string),
-		Headers: make(map[string]string),
-	}
-
-	for i, h := range header {
-		if i == 0 {
-			spl := strings.Split(h, " ")
-			req.Method = spl[0]
-			req.Route = spl[1]
-		} else {
-			spl := strings.Split(h, ": ")
-			if spl[0] == "Host" {
-				req.Host = spl[1]
-			} else {
-				req.Headers[spl[0]] = spl[1]
+				// Imprime cada línea del cuerpo para depuración
+				fmt.Println("Línea del cuerpo:", ln)
+			}
+			if f == false && ln == "" {
+				req := &Request{
+					Params:  make(map[string]string),
+					Headers: make(map[string]string),
+					Body:    requestBodyLines,
+				}
+				for i, h := range header {
+					if i == 0 {
+						spl := strings.Split(h, " ")
+						req.Method = spl[0]
+						req.Route = spl[1]
+					} else {
+						spl := strings.Split(h, ": ")
+						if spl[0] == "Host" {
+							req.Host = spl[1]
+						} else {
+							req.Headers[spl[0]] = spl[1]
+						}
+					}
+				}
+				if handlers, exists := r.routes[req.Route]; exists {
+					if handler, exists := handlers[req.Method]; exists {
+						handler(req, conn)
+					} else {
+						util.HttpMethodNotAllowed(conn)
+					}
+				} else {
+					util.HttpNotFound(conn)
+				}
+			}
+			if !scanner.Scan() {
+				break
 			}
 		}
-	}
-
-	// Mueve la asignación de req.Body aquí
-	req.Body = requestBodyLines
-
-	if handlers, exists := r.routes[req.Route]; exists {
-		if handler, exists := handlers[req.Method]; exists {
-			handler(req, conn)
-		} else {
-			util.HttpMethodNotAllowed(conn)
-		}
-	} else {
-		util.HttpNotFound(conn)
 	}
 }
