@@ -28,6 +28,8 @@ func GetHandler(request *router.Request, conn net.Conn) {
 	conn.Close()
 
 }
+
+// alguien debería acabar conmigo
 func PostHandler(request *router.Request, conn net.Conn) {
 	fmt.Println(request.Host, request.Route, request.Method)
 	data := map[string]interface{}{
